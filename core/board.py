@@ -21,4 +21,23 @@ class Board:
             return None
         return self.__puntos__[i]
 
-    
+    def add_checker_to_point(self, i, color):
+        
+        if i < 0 or i > 23:
+            return False
+        ficha = Checker(color)
+        self.__puntos__[i].append(ficha)
+        return True
+
+    def count_color_on_point(self, i, color):
+        
+        if i < 0 or i > 23:
+            return 0
+        total = 0
+        j = 0
+        while j < len(self.__puntos__[i]):
+            ficha = self.__puntos__[i][j]
+            if ficha.get_color() == color:
+                total = total + 1
+            j = j + 1
+        return total
