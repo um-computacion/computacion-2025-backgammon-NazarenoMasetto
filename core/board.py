@@ -41,3 +41,14 @@ class Board:
                 total = total + 1
             j = j + 1
         return total
+    
+    def setup_start_position(self):
+        
+        i = 0
+        while i < 24:
+            self.__puntos__[i] = []
+            i = i + 1
+
+        for _ in range(2):
+            self.__puntos__[0].append(Checker("white"))
+            self.__puntos__[23].append(Checker("black"))
