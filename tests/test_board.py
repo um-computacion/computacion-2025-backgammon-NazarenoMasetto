@@ -28,3 +28,28 @@ class TestBoard(unittest.TestCase):
         ok2 = self.b.add_checker_to_point(99, "black")
         self.assertFalse(ok1)
         self.assertFalse(ok2)
+    def test_count_color_ok_mixed(self):
+        self.b.add_checker_to_point(3, "white")
+        self.b.add_checker_to_point(3, "black")
+        self.b.add_checker_to_point(3, "white")
+        self.assertEqual(self.b.count_color_on_point(3, "white"), 2)
+        self.assertEqual(self.b.count_color_on_point(3, "black"), 1)
+
+    def test_count_color_out_of_range_and_empty(self):
+        self.assertEqual(self.b.count_color_on_point(-5, "white"), 0)
+        self.assertEqual(self.b.count_color_on_point(100, "black"), 0)
+        self.assertEqual(self.b.count_color_on_point(10, "white"), 0)
+
+    def test_setup_start_position(self):
+        self.b.add_checker_to_point(0, "black")
+        self.b.add_checker_to_point(23, "white")
+        self.b.add_checker_to_point(5, "white")
+        self.b.setup_start_position()
+        for i in range(24):
+            if i not in (0, 23):
+                self.assertEqual(self.b.get_point(i), [])
+        self.assertEqual(self.b.count_color_on_point(0, "white"), 2)
+        self.assertEqual(self.b.count_color_on_point(23, "black"), 2)
+
+if __name__ == "__main__":
+    unittest.main()
