@@ -18,3 +18,21 @@ class Player:
 
     def get_off_count(self):
         return self.__fichas_fuera__
+    
+    def add_to_bar(self, cantidad):
+        if cantidad < 0:
+            return
+        self.__fichas_en_barra__ = self.__fichas_en_barra__ + cantidad
+
+    def remove_from_bar(self, cantidad):
+        if cantidad < 0:
+            return
+        nuevo = self.__fichas_en_barra__ - cantidad
+        if nuevo < 0:
+            nuevo = 0
+        self.__fichas_en_barra__ = nuevo
+
+    def add_off(self, cantidad):
+        if cantidad < 0:
+            return
+        self.__fichas_fuera__ = self.__fichas_fuera__ + cantidad
