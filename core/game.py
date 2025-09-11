@@ -119,3 +119,44 @@ class BackgammonGame:
                     i = i - 1
                 return True
             return False
+    def apply_move(self, src, dest):
+        
+        jugador = self.current_player()
+        color = jugador.get_color()
+
+        if self.__board__.get_bar_count(color) > 0 and src != -1:
+            return False
+        if len(self.__available_moves__) == 0:
+            return False
+
+        if src == -1:
+            i = 0
+            while i < len(self.__available_moves__):
+                die = self.__available_moves__[i]
+                esperado = self.entry_point_for_die(color, die)
+                if esperado == dest:
+                    ok = self.__board__.move_from_bar(color, dest)
+                    if ok:
+                        self.__available_moves__.pop(i)
+                        return True
+                    else:
+                        return False
+                i = i + 1
+            return False
+
+        if dest == -2:
+            if not self.__board__.all_in_home(color):
+                return False
+            i = 0
+            while i < len(self.__available_moves__):
+                die = self.__available_moves__[i]
+                if self.can_bear_off_with(color, src, die):
+                    ok = self.__board__.bear_off_from(color, src)
+                    if ok:
+                        self.__available_moves__.pop(i)
+                        jugador.add_off(1)
+                        return True
+                    else:
+                        return False
+                i = i + 1
+            return False
