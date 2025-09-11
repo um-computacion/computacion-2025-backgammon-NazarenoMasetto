@@ -43,3 +43,79 @@ class BackgammonGame:
             self.__available_moves__.append(d1)
             self.__available_moves__.append(d2)
         return resultado
+     
+    def end_turn(self):
+        """
+        Cambia al siguiente jugador.
+        """
+        if self.__turn_index__ == 0:
+            self.__turn_index__ = 1
+        else:
+            self.__turn_index__ = 0
+        self.__available_moves__ = []
+        self.__last_roll__ = None
+
+    def get_board(self):
+        return self.__board__
+
+    def get_available_moves(self):
+        copia = []
+        i = 0
+        while i < len(self.__available_moves__):
+            copia.append(self.__available_moves__[i])
+            i = i + 1
+        return copia
+
+    def consume_move_value(self, used):
+        i = 0
+        while i < len(self.__available_moves__):
+            if self.__available_moves__[i] == used:
+                self.__available_moves__.pop(i)
+                return True
+            i = i + 1
+        return False
+
+    def direction(self, color):
+        if color == "white":
+            return 1
+        return -1
+
+    def entry_point_for_die(self, color, die):
+        if color == "white":
+            return die - 1
+        else:
+            return 23 - (die - 1)
+
+    def distance(self, color, src, dest):
+        if color == "white":
+            return dest - src
+        else:
+            return src - dest
+
+    def can_bear_off_with(self, color, src, die):
+        if color == "white":
+            exacto = (src + die == 24)
+            mayor = (src + die > 24)
+            if exacto:
+                return True
+            if mayor:
+                i = 18
+                while i < src:
+                    if self.__board__.count_color_on_point(i, "white") > 0:
+                        return False
+                    i = i + 1
+                return True
+            return False
+        else:
+            exacto = (src - die == -1)
+            mayor = (src - die < -1)
+            if exacto:
+                return True
+            if mayor:
+                i = 5
+                while i > src:
+                    if self.__board__.count_color_on_point(i, "black") > 0:
+                        return False
+                    i = i - 1
+                return True
+            return False
