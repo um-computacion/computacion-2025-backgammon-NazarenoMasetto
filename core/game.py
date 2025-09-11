@@ -3,7 +3,10 @@ from .dice import Dice
 from .player import Player
 
 class BackgammonGame:
-
+    """
+    Controla el juego de Backgammon.
+    Maneja jugadores, tablero, dados y turnos.
+    """
 
     def __init__(self, player_white, player_black):
         self.__board__ = Board()
@@ -14,21 +17,30 @@ class BackgammonGame:
         self.__last_roll__ = None
 
     def start(self):
-        
+        """
+        Prepara el tablero con la posición inicial estándar.
+        """
         self.__board__.setup_start_position()
 
     def current_player(self):
-        
+        """
+        Devuelve el jugador actual.
+        """
         return self.__players__[self.__turn_index__]
 
     def other_player(self):
-      
+        """
+        Devuelve el jugador contrario al actual.
+        """
         if self.__turn_index__ == 0:
             return self.__players__[1]
         return self.__players__[0]
 
     def roll(self):
-       
+        """
+        Tira los dados y genera los movimientos disponibles.
+        Maneja el caso de dobles (4 movimientos).
+        """
         resultado = self.__dice__.roll()
         self.__last_roll__ = resultado
         self.__available_moves__ = []
@@ -43,7 +55,7 @@ class BackgammonGame:
             self.__available_moves__.append(d1)
             self.__available_moves__.append(d2)
         return resultado
-     
+
     def end_turn(self):
         """
         Cambia al siguiente jugador.
@@ -119,8 +131,13 @@ class BackgammonGame:
                     i = i - 1
                 return True
             return False
+
     def apply_move(self, src, dest):
-        
+        """
+        Aplica un movimiento para el jugador actual.
+        src = -1 (desde barra)
+        dest = -2 (bear-off)
+        """
         jugador = self.current_player()
         color = jugador.get_color()
 
@@ -160,3 +177,26 @@ class BackgammonGame:
                         return False
                 i = i + 1
             return False
+        else:
+            paso = self.distance(color, src, dest)
+            if paso <= 0:
+                return False
+            i = 0
+            while i < len(self.__available_moves__):
+                die = self.__available_moves__[i]
+                if die == paso:
+                    ok = self.__board__.move_on_board(color, src, dest)
+                    if ok:
+                        self.__available_moves__.pop(i)
+                        return True
+                    else:
+                        return False
+                i = i + 1
+            return False
+
+    def has_winner(self):
+        if self.__players__[0].get_off_count() >= 15:
+            return self.__players__[0]
+        if self.__players__[1].get_off_count() >= 15:
+            return self.__players__[1]
+        return None
