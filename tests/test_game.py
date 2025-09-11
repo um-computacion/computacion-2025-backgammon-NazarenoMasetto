@@ -43,3 +43,30 @@ class TestBackgammonGame(unittest.TestCase):
         self.game.end_turn()
         self.assertIs(self.game.current_player(), self.pb)
         self.assertIs(self.game.other_player(), self.pw)
+
+    def test_roll_no_doble(self):
+        self.dice.roll.return_value = (3, 5)
+        r = self.game.roll()
+        self.assertEqual(r, (3, 5))
+        self.assertEqual(sorted(self.game.get_available_moves()), [3, 5])
+
+    def test_roll_doble(self):
+        self.dice.roll.return_value = (4, 4)
+        r = self.game.roll()
+        self.assertEqual(r, (4, 4))
+        self.assertEqual(self.game.get_available_moves(), [4, 4, 4, 4])
+
+    def test_consume_move_value(self):
+        self.dice.roll.return_value = (2, 5)
+        self.game.roll()
+        ok = self.game.consume_move_value(2)
+        self.assertTrue(ok)
+        self.assertEqual(self.game.get_available_moves(), [5])
+        self.assertFalse(self.game.consume_move_value(6))
+
+    def test_end_turn_resetea(self):
+        self.dice.roll.return_value = (1, 2)
+        self.game.roll()
+        self.game.end_turn()
+        self.assertEqual(self.game.get_available_moves(), [])
+        self.assertIs(self.game.current_player(), self.pb)
