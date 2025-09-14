@@ -106,3 +106,75 @@ class TestBackgammonGame(unittest.TestCase):
     def test_apply_move_falla_sin_available(self):
         self.board.get_bar_count.return_value = 0
         self.assertFalse(self.game.apply_move(5, 8))
+
+    def test_apply_move_desde_bar_ok_y_falla_por_no_coincidir_dado(self):
+        self.board.get_bar_count.return_value = 1
+        self.dice.roll.return_value = (2, 5)
+        self.game.roll()
+        self.board.move_from_bar.return_value = True
+        dest_ok = self.game.entry_point_for_die("white", 2)
+        self.assertTrue(self.game.apply_move(-1, dest_ok))
+        self.assertFalse(self.game.apply_move(-1, 99))
+
+    def test_apply_move_desde_bar_falla_por_board(self):
+        self.board.get_bar_count.return_value = 1
+        self.dice.roll.return_value = (3, 6)
+        self.game.roll()
+        self.board.move_from_bar.return_value = False
+        dest_ok = self.game.entry_point_for_die("white", 3)
+        self.assertFalse(self.game.apply_move(-1, dest_ok))
+
+    def test_apply_move_bear_off_rechazado_por_all_in_home(self):
+        self.board.get_bar_count.return_value = 0
+        self.dice.roll.return_value = (2, 3)
+        self.game.roll()
+        self.board.all_in_home.return_value = False
+        self.assertFalse(self.game.apply_move(22, -2))
+
+    def test_apply_move_bear_off_ok_exacto(self):
+        self.board.get_bar_count.return_value = 0
+        self.dice.roll.return_value = (1, 4)
+        self.board.all_in_home.return_value = True
+        self.board.bear_off_from.return_value = True
+        self.board.count_color_on_point.return_value = 0
+        self.game.roll()
+        self.assertTrue(self.game.apply_move(23, -2))
+        self.assertEqual(self.pw.get_off_count(), 1)
+
+    def test_apply_move_bear_off_overflow_true_y_false(self):
+        self.board.get_bar_count.return_value = 0
+        self.dice.roll.return_value = (6, 6)
+        self.game.roll()
+        self.board.all_in_home.return_value = True
+        self.board.bear_off_from.return_value = True
+        self.board.count_color_on_point.return_value = 0
+        self.assertTrue(self.game.apply_move(20, -2))
+        self.board.bear_off_from.return_value = False
+        self.dice.roll.return_value = (6, 5)
+        self.game.roll()
+        self.assertFalse(self.game.apply_move(20, -2))
+
+    def test_apply_move_normal_ok_y_fallas(self):
+        self.board.get_bar_count.return_value = 0
+        self.dice.roll.return_value = (3, 5)
+        self.game.roll()
+        self.assertFalse(self.game.apply_move(10, 9))
+        self.assertFalse(self.game.apply_move(10, 10))
+        self.board.move_on_board.return_value = True
+        self.assertTrue(self.game.apply_move(10, 13))
+        self.dice.roll.return_value = (6, 6)
+        self.game.roll()
+        self.board.move_on_board.return_value = False
+        self.assertFalse(self.game.apply_move(5, 11))
+        self.assertFalse(self.game.apply_move(5, 12))
+
+    def test_has_winner(self):
+        self.assertIsNone(self.game.has_winner())
+        self.pw.add_off(15)
+        self.assertIs(self.game.has_winner(), self.pw)
+        self.pw._off = 0
+        self.pb._off = 15
+        self.assertIs(self.game.has_winner(), self.pb)
+
+if __name__ == "__main__":
+    unittest.main()
