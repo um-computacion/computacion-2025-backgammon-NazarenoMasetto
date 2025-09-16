@@ -17,7 +17,13 @@ Terminando con los test de clase game
 Comnezando con clase dice
 
 ## Changelog
-## [04.0] 15/09/2025
+## [0.04] 15/09/2025
 
 ## Agregando 
-Comnezando con os tests clase dice
+Comenzando con los tests clase dice
+
+## Changelog
+## [0.05] 15/09/2025
+
+## Agregando 
+Continuando con los tests clase dice
