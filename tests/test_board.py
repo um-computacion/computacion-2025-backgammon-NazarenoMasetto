@@ -1,55 +1,155 @@
-import unittest
-from core.board import Board
+from .checker import Checker
 
-class TestBoard(unittest.TestCase):
-    def setUp(self):
-        self.b = Board()
+class Board:
+   
+    def _init_(self):
+        self._puntos_ = []
+        i = 0
+        while i < 24:
+            self._puntos_.append([])
+            i = i + 1
+        self._bar_white_ = []
+        self._bar_black_ = []
+        self._home_white_ = []
+        self._home_black_ = []
 
-    def test_get_point_in_range(self):
-        p0 = self.b.get_point(0)
-        self.assertIsInstance(p0, list)
-        self.assertEqual(len(p0), 0)
-        p23 = self.b.get_point(23)
-        self.assertIsInstance(p23, list)
+    def get_point(self, i):
+        if i < 0 or i > 23:
+            return None
+        return self._puntos_[i]
 
-    def test_get_point_out_of_range(self):
-        self.assertIsNone(self.b.get_point(-1))
-        self.assertIsNone(self.b.get_point(24))
+    def clear(self):
+        i = 0
+        while i < 24:
+            self._puntos_[i] = []
+            i = i + 1
+        self._bar_white_ = []
+        self._bar_black_ = []
+        self._home_white_ = []
+        self._home_black_ = []
 
-    def test_add_checker_ok(self):
-        ok = self.b.add_checker_to_point(5, "white")
-        self.assertTrue(ok)
-        p5 = self.b.get_point(5)
-        self.assertEqual(len(p5), 1)
-        self.assertEqual(p5[0].get_color(), "white")
+    def setup_start_position(self):
+        
+        self.clear()
 
-    def test_add_checker_out_of_range(self):
-        ok1 = self.b.add_checker_to_point(-1, "white")
-        ok2 = self.b.add_checker_to_point(99, "black")
-        self.assertFalse(ok1)
-        self.assertFalse(ok2)
-    def test_count_color_ok_mixed(self):
-        self.b.add_checker_to_point(3, "white")
-        self.b.add_checker_to_point(3, "black")
-        self.b.add_checker_to_point(3, "white")
-        self.assertEqual(self.b.count_color_on_point(3, "white"), 2)
-        self.assertEqual(self.b.count_color_on_point(3, "black"), 1)
+        k = 0
+        while k < 2:
+            self._puntos_[0].append(Checker("white"))
+            self._puntos_[23].append(Checker("black"))
+            k = k + 1
 
-    def test_count_color_out_of_range_and_empty(self):
-        self.assertEqual(self.b.count_color_on_point(-5, "white"), 0)
-        self.assertEqual(self.b.count_color_on_point(100, "black"), 0)
-        self.assertEqual(self.b.count_color_on_point(10, "white"), 0)
+        k = 0
+        while k < 5:
+            self._puntos_[11].append(Checker("white"))
+            self._puntos_[12].append(Checker("black"))
+            k = k + 1
 
-    def test_setup_start_position(self):
-        self.b.add_checker_to_point(0, "black")
-        self.b.add_checker_to_point(23, "white")
-        self.b.add_checker_to_point(5, "white")
-        self.b.setup_start_position()
-        for i in range(24):
-            if i not in (0, 23):
-                self.assertEqual(self.b.get_point(i), [])
-        self.assertEqual(self.b.count_color_on_point(0, "white"), 2)
-        self.assertEqual(self.b.count_color_on_point(23, "black"), 2)
+        k = 0
+        while k < 3:
+            self._puntos_[16].append(Checker("white"))
+            self._puntos_[7].append(Checker("black"))
+            k = k + 1
 
-if __name__ == "__main__":
-    unittest.main()
+        k = 0
+        while k < 5:
+            self._puntos_[18].append(Checker("white"))
+            self._puntos_[5].append(Checker("black"))
+            k = k + 1
+
+    def add_checker_to_point(self, i, color):
+        if i < 0 or i > 23:
+            return False
+        ficha = Checker(color)
+        self._puntos_[i].append(ficha)
+        return True
+
+    def pop_checker_from_point(self, i):
+        if i < 0 or i > 23:
+            return None
+        if len(self._puntos_[i]) == 0:
+            return None
+        return self._puntos_[i].pop()
+
+    def top_color_on_point(self, i):
+        if i < 0 or i > 23:
+            return None
+        if len(self._puntos_[i]) == 0:
+            return None
+        return self._puntos_[i][-1].get_color()
+
+    def count_color_on_point(self, i, color):
+        if i < 0 or i > 23:
+            return 0
+        total = 0
+        j = 0
+        while j < len(self._puntos_[i]):
+            ficha = self._puntos_[i][j]
+            if ficha.get_color() == color:
+                total = total + 1
+            j = j + 1
+        return total
+
+    def get_bar_count(self, color):
+        if color == "white":
+            return len(self._bar_white_)
+        return len(self._bar_black_)
+
+    def get_home_count(self, color):
+        if color == "white":
+            return len(self._home_white_)
+        return len(self._home_black_)
+
+    def add_to_bar(self, color):
+        ficha = Checker(color)
+        if color == "white":
+            self._bar_white_.append(ficha)
+        else:
+            self._bar_black_.append(ficha)
+
+    def remove_from_bar(self, color):
+        if color == "white":
+            if len(self._bar_white_) > 0:
+                return self._bar_white_.pop()
+            return None
+        else:
+            if len(self._bar_black_) > 0:
+                return self._bar_black_.pop()
+            return None
+
+    def all_in_home(self, color):
+     
+        total_en_tablero = 0
+        i = 0
+        while i < 24:
+            total_en_tablero = total_en_tablero + self.count_color_on_point(i, color)
+            i = i + 1
+        total_fuera = self.get_home_count(color)
+        total_en_barra = self.get_bar_count(color)
+        total = total_en_tablero + total_fuera + total_en_barra
+        # 15 fichas por color
+        if total != 15:
+            
+            pass
+
+        if color == "white":
+            
+            i = 0
+            while i < 18:
+                if self.count_color_on_point(i, "white") > 0:
+                    return False
+                i = i + 1
+            if self.get_bar_count("white") > 0:
+                return False
+            return True
+        else:
+            
+            i = 6
+            while i < 24:
+                if self.count_color_on_point(i, "black") > 0:
+                    return False
+                i = i + 1
+            if self.get_bar_count("black") > 0:
+                return False
+            return True
+
+    
