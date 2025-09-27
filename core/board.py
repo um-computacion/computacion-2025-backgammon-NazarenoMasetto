@@ -152,4 +152,91 @@ class Board:
                 return False
             return True
 
-    
+    def can_land(self, dest, color):
+        
+        if dest < 0 or dest > 23:
+            return False
+        if len(self._puntos_[dest]) == 0:
+            return True
+        top = self._puntos_[dest][-1].get_color()
+        if top == color:
+            return True
+        
+        cant = len(self._puntos_[dest])
+        if cant == 1:
+            return True
+        return False
+
+    def move_from_bar(self, color, dest):
+        
+        if color == "white":
+            
+            if dest < 0 or dest > 5:
+                return False
+            if not self.can_land(dest, "white"):
+                return False
+            ficha = self.remove_from_bar("white")
+            if ficha is None:
+                return False
+        
+            if len(self._puntos[dest]) == 1 and self.puntos_[dest][-1].get_color() == "black":
+                capturada = self._puntos_[dest].pop()
+                self._bar_black_.append(capturada)
+            self._puntos_[dest].append(ficha)
+            return True
+        else:
+            
+            if dest < 18 or dest > 23:
+                return False
+            if not self.can_land(dest, "black"):
+                return False
+            ficha = self.remove_from_bar("black")
+            if ficha is None:
+                return False
+            if len(self._puntos[dest]) == 1 and self.puntos_[dest][-1].get_color() == "white":
+                capturada = self._puntos_[dest].pop()
+                self._bar_white_.append(capturada)
+            self._puntos_[dest].append(ficha)
+            return True
+
+    def move_on_board(self, color, src, dest):
+        
+        if src < 0 or src > 23:
+            return False
+        if dest < 0 or dest > 23:
+            return False
+        if len(self._puntos_[src]) == 0:
+            return False
+        if self._puntos_[src][-1].get_color() != color:
+            return False
+        if not self.can_land(dest, color):
+            return False
+
+        ficha = self._puntos_[src].pop()
+
+        if len(self._puntos_[dest]) == 1:
+            otro = self._puntos_[dest][-1]
+            if otro.get_color() != color:
+                self._puntos_[dest].pop()
+                if color == "white":
+                    self._bar_black_.append(otro)
+                else:
+                    self._bar_white_.append(otro)
+
+        self._puntos_[dest].append(ficha)
+        return True
+
+    def bear_off_from(self, color, src):
+        
+        if src < 0 or src > 23:
+            return False
+        if len(self._puntos_[src]) == 0:
+            return False
+        if self._puntos_[src][-1].get_color() != color:
+            return False
+        ficha = self._puntos_[src].pop()
+        if color == "white":
+            self._home_white_.append(ficha)
+        else:
+            self._home_black_.append(ficha)
+        return True

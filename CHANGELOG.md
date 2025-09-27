@@ -33,3 +33,9 @@ Continuando con los tests clase dice
 
 ## Agregando 
 Arrancando clase board 
+
+## Changelog
+## [0.07] 26/09/2025
+
+## Agregando 
+Continuando clase board 
