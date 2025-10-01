@@ -39,3 +39,16 @@ Arrancando clase board
 
 ## Agregando 
 Continuando clase board 
+
+## Changelog
+## [0.08] 26/09/2025
+
+## Agregando 
+Arrancando test de clase board
+
+## Changelog
+## [0.09] 27/09/2025
+
+## Agregando 
+Continuando con test de clase board
+
