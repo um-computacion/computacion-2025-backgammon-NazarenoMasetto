@@ -17,3 +17,6 @@ class Dice:
         if self.__ultimo_resultado__ is None:
             return False
         return self.__ultimo_resultado__[0] == self.__ultimo_resultado__[1]
+
+    def reset(self):
+        self.__ultimo_resultado__ = None
