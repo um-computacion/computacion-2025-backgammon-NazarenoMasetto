@@ -52,3 +52,8 @@ Arrancando test de clase board
 ## Agregando 
 Continuando con test de clase board
 
+## Changelog
+## [0.10] 27/09/2025
+
+## Agregando 
+Modificando clase dice
