@@ -1,7 +1,10 @@
 from .checker import Checker
 
 class Board:
-   
+    """
+    Tablero de Backgammon con 24 puntos, barra y home.
+    """
+
     def __init__(self):
         self.__puntos__ = []
         i = 0
@@ -29,7 +32,6 @@ class Board:
         self.__home_black__ = []
 
     def setup_start_position(self):
-        
         self.clear()
 
         k = 0
@@ -117,22 +119,7 @@ class Board:
             return None
 
     def all_in_home(self, color):
-     
-        total_en_tablero = 0
-        i = 0
-        while i < 24:
-            total_en_tablero = total_en_tablero + self.count_color_on_point(i, color)
-            i = i + 1
-        total_fuera = self.get_home_count(color)
-        total_en_barra = self.get_bar_count(color)
-        total = total_en_tablero + total_fuera + total_en_barra
-        # 15 fichas por color
-        if total != 15:
-            
-            pass
-
         if color == "white":
-            
             i = 0
             while i < 18:
                 if self.count_color_on_point(i, "white") > 0:
@@ -142,7 +129,6 @@ class Board:
                 return False
             return True
         else:
-            
             i = 6
             while i < 24:
                 if self.count_color_on_point(i, "black") > 0:
@@ -153,7 +139,6 @@ class Board:
             return True
 
     def can_land(self, dest, color):
-        
         if dest < 0 or dest > 23:
             return False
         if len(self.__puntos__[dest]) == 0:
@@ -161,16 +146,13 @@ class Board:
         top = self.__puntos__[dest][-1].get_color()
         if top == color:
             return True
-        
         cant = len(self.__puntos__[dest])
         if cant == 1:
             return True
         return False
 
     def move_from_bar(self, color, dest):
-        
         if color == "white":
-            
             if dest < 0 or dest > 5:
                 return False
             if not self.can_land(dest, "white"):
@@ -178,14 +160,12 @@ class Board:
             ficha = self.remove_from_bar("white")
             if ficha is None:
                 return False
-        
             if len(self.__puntos__[dest]) == 1 and self.__puntos__[dest][-1].get_color() == "black":
                 capturada = self.__puntos__[dest].pop()
                 self.__bar_black__.append(capturada)
             self.__puntos__[dest].append(ficha)
             return True
         else:
-            
             if dest < 18 or dest > 23:
                 return False
             if not self.can_land(dest, "black"):
@@ -200,7 +180,6 @@ class Board:
             return True
 
     def move_on_board(self, color, src, dest):
-        
         if src < 0 or src > 23:
             return False
         if dest < 0 or dest > 23:
@@ -227,7 +206,6 @@ class Board:
         return True
 
     def bear_off_from(self, color, src):
-        
         if src < 0 or src > 23:
             return False
         if len(self.__puntos__[src]) == 0:
