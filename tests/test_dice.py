@@ -34,4 +34,25 @@ class TestDice(unittest.TestCase):
             self.assertIsInstance(a, int)
             self.assertIsInstance(b, int)
 
-    
+    @patch("random.randint", side_effect=[1, 2, 3, 3, 4, 5])
+    def test_last_updates_across_rolls_and_is_double_changes(self, _):
+        self.assertEqual(self.d.roll(), (1, 2))
+        self.assertEqual(self.d.get_last(), (1, 2))
+        self.assertFalse(self.d.is_double())
+        self.assertEqual(self.d.roll(), (3, 3))
+        self.assertEqual(self.d.get_last(), (3, 3))
+        self.assertTrue(self.d.is_double())
+        self.assertEqual(self.d.roll(), (4, 5))
+        self.assertEqual(self.d.get_last(), (4, 5))
+        self.assertFalse(self.d.is_double())
+
+    def test_reset_from_start_and_after_roll(self):
+        self.d.reset()
+        self.assertIsNone(self.d.get_last())
+        self.assertFalse(self.d.is_double())
+        with patch("random.randint", side_effect=[2, 4]):
+            self.d.roll()
+        self.assertIsNotNone(self.d.get_last())
+        self.d.reset()
+        self.assertIsNone(self.d.get_last())
+        self.assertFalse(self.d.is_double())
