@@ -23,3 +23,16 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(self.pw.get_bar_count(), 3)
         self.pw.add_to_bar(-2)
         self.assertEqual(self.pw.get_bar_count(), 3)
+
+    def test_remove_from_bar_basic_and_clamp_to_zero(self):
+        self.pw.add_to_bar(5)
+        self.assertEqual(self.pw.get_bar_count(), 5)
+        self.pw.remove_from_bar(2)
+        self.assertEqual(self.pw.get_bar_count(), 3)
+        self.pw.remove_from_bar(10)
+        self.assertEqual(self.pw.get_bar_count(), 0)
+
+    def test_remove_from_bar_negative_ignored(self):
+        self.pw.add_to_bar(4)
+        self.pw.remove_from_bar(-1)
+        self.assertEqual(self.pw.get_bar_count(), 4)
