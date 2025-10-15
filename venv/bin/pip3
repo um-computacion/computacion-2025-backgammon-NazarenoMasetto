@@ -1,4 +1,4 @@
-#!/home/nazarenomasetto/COMPUTACION/computacion-2025-backgammon-NazarenoMasetto/venv/bin/python3
+#!/home/nazarenomasetto/COMPUTACION/computacion-2025-backgammon-NazarenoMasetto/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
