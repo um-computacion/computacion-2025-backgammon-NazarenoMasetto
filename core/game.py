@@ -50,3 +50,20 @@ class Game:
             self.__available__.append(d2)
         self.__rolled__ = True
         return r
+
+    def end_turn(self):
+        self.__turn_white__ = not self.__turn_white__
+        self.__available__ = []
+        self.__rolled__ = False
+
+    def has_winner(self):
+        if self.__board__.get_home_count("white") == 15:
+            return self.__white__
+        if self.__board__.get_home_count("black") == 15:
+            return self.__black__
+        return None
+
+    def __color__(self):
+        if self.__turn_white__:
+            return "white"
+        return "black"
