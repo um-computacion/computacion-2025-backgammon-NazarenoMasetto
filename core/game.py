@@ -67,3 +67,38 @@ class Game:
         if self.__turn_white__:
             return "white"
         return "black"
+    
+    def __consume_exact__(self, dist):
+        i = 0
+        while i < len(self.__available__):
+            if self.__available__[i] == dist:
+                self.__available__.pop(i)
+                return True
+            i = i + 1
+        return False
+
+    def __consume_min_ge__(self, dist):
+        pos = -1
+        best = None
+        i = 0
+        while i < len(self.__available__):
+            v = self.__available__[i]
+            if v >= dist:
+                if best is None or v < best:
+                    best = v
+                    pos = i
+            i = i + 1
+        if pos != -1:
+            self.__available__.pop(pos)
+            return True
+        return False
+
+    def __distance_board__(self, color, src, dest):
+        if color == "white":
+            if dest <= src:
+                return -1
+            return dest - src
+        else:
+            if dest >= src:
+                return -1
+            return src - dest
