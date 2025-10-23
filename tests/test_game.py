@@ -51,3 +51,22 @@ class TestBackgammonGame(unittest.TestCase):
         self.assertEqual(r2, (4, 4))
         self.assertEqual(self.game.get_available_moves(), [4, 4, 4, 4])
 
+    def test_get_available_moves_es_copia_y_consume(self):
+        self.dice.roll.return_value = (2, 5)
+        self.game.roll()
+        m = self.game.get_available_moves()
+        m.append(99)
+        self.assertEqual(self.game.get_available_moves(), [2, 5])
+        self.assertTrue(self.game.consume_move_value(2))
+        self.assertEqual(self.game.get_available_moves(), [5])
+        self.assertFalse(self.game.consume_move_value(6))
+
+    def test_helpers(self):
+        self.assertEqual(self.game.direction("white"), 1)
+        self.assertEqual(self.game.direction("black"), -1)
+        self.assertEqual(self.game.entry_point_for_die("white", 3), 2)
+        self.assertEqual(self.game.entry_point_for_die("black", 3), 21)
+        self.assertEqual(self.game.distance("white", 5, 9), 4)
+        self.assertEqual(self.game.distance("black", 9, 5), 4)
+
+
