@@ -1,0 +1,21 @@
+# Bytecode / cache
+__pycache__/
+*.pyc
+
+# Entorno virtual
+venv/
+
+# Coverage data
+.coverage
+htmlcov/
+
+# Archivos de build o instalación
+*.egg-info/
+*.dist-info/
+*.egg
+
+# Archivos de site-packages o libs instaladas
+**/site-packages/
+
+# Reportes temporales
+.coverage.*
