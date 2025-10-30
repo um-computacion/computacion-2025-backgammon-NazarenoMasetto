@@ -98,5 +98,90 @@ class TestBoard(unittest.TestCase):
         self.assertFalse(self.b.bear_off_from("white", -1))
         self.assertFalse(self.b.bear_off_from("black", 20))
 
+    def test_move_from_bar_white_and_black(self):
+        self.b.add_to_bar("white")
+        self.assertTrue(self.b.move_from_bar("white", 2))
+        self.assertFalse(self.b.move_from_bar("white", 8))
+        self.assertFalse(self.b.move_from_bar("white", 1))
+
+        self.b.add_to_bar("black")
+        self.assertTrue(self.b.move_from_bar("black", 20))
+        self.assertFalse(self.b.move_from_bar("black", 10))
+        self.assertFalse(self.b.move_from_bar("black", 23))
+
+    def test_move_on_board_capture_opponent(self):
+        self.b.add_checker_to_point(0, "white")
+        self.b.add_checker_to_point(1, "black")
+        self.assertTrue(self.b.move_on_board("white", 0, 1))
+        self.assertEqual(self.b.get_bar_count("black"), 1)
+
+    def test_all_in_home_white_and_black(self):
+        self.b.clear()
+        self.b.__home_white__.append(Checker("white"))
+        self.assertTrue(self.b.all_in_home("white"))
+        self.b.add_checker_to_point(5, "white")
+        self.assertFalse(self.b.all_in_home("white"))
+
+        self.b.clear()
+        self.b.__home_black__.append(Checker("black"))
+        self.assertTrue(self.b.all_in_home("black"))
+        self.b.add_checker_to_point(22, "black")
+        self.assertFalse(self.b.all_in_home("black"))
+
+    def test_remove_from_bar_empty(self):
+        self.assertIsNone(self.b.remove_from_bar("white"))
+        self.assertIsNone(self.b.remove_from_bar("black"))
+
+    def test_can_land_with_opponent_one_checker(self):
+        self.b.add_checker_to_point(10, "black")
+        self.assertTrue(self.b.can_land(10, "white"))
+        self.b.add_checker_to_point(10, "black")
+        self.assertFalse(self.b.can_land(10, "white"))
+
+    def test_move_from_bar_invalid_cases(self):
+        # mover sin fichas en barra blanca
+        self.assertFalse(self.b.move_from_bar("white", 3))
+        # dest fuera de rango
+        self.b.add_to_bar("white")
+        self.assertFalse(self.b.move_from_bar("white", -1))
+        # mover sin fichas en barra negra
+        self.assertFalse(self.b.move_from_bar("black", 22))
+        # dest fuera de rango para negras
+        self.b.add_to_bar("black")
+        self.assertFalse(self.b.move_from_bar("black", 24))
+
+    def test_move_on_board_invalid_paths(self):
+        # src sin fichas
+        self.assertFalse(self.b.move_on_board("white", 0, 5))
+        # src fuera de rango
+        self.assertFalse(self.b.move_on_board("white", -1, 5))
+        # dest fuera de rango
+        self.b.add_checker_to_point(0, "white")
+        self.assertFalse(self.b.move_on_board("white", 0, 24))
+        # ficha del color opuesto
+        self.b.clear()
+        self.b.add_checker_to_point(1, "black")
+        self.assertFalse(self.b.move_on_board("white", 1, 2))
+
+    def test_move_from_bar_white_hits_black(self):
+        # Coloca ficha negra en destino para que la blanca la capture al entrar
+        self.b.add_checker_to_point(2, "black")
+        self.b.add_to_bar("white")
+        result = self.b.move_from_bar("white", 2)
+        self.assertTrue(result)
+        self.assertEqual(self.b.get_bar_count("black"), 1)
+        self.assertEqual(self.b.get_point(2)[-1].get_color(), "white")
+
+    def test_move_on_board_black_hits_white(self):
+        self.b.add_checker_to_point(20, "black")
+        self.b.add_checker_to_point(21, "white")
+        result = self.b.move_on_board("black", 20, 21)
+        self.assertTrue(result)
+        self.assertEqual(self.b.get_bar_count("white"), 1)
+        self.assertEqual(self.b.get_point(21)[-1].get_color(), "black")
+
+
+
+
 if __name__ == "__main__":
     unittest.main()
