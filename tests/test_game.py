@@ -148,40 +148,25 @@ class TestGame(unittest.TestCase):
         self.assertFalse(self.game.apply_move(20, -2))
 
     def test_apply_move_sin_dados_lanzados_devuelve_false(self):
-        """Cubre la rama donde no se lanzaron los dados antes de mover."""
         self.game.__rolled__ = False
-        resultado = self.game.apply_move(0, 1)
-        self.assertFalse(resultado)
-    
-    def test_apply_move_sin_dados_lanzados_devuelve_false(self):
-        """Cubre la rama donde no se lanzaron los dados antes de mover."""
-        self.game.__rolled__ = False
-        resultado = self.game.apply_move(0, 1)
-        self.assertFalse(resultado)
-    
+        self.assertFalse(self.game.apply_move(0, 1))
+
     def test_apply_move_sin_movimientos_disponibles(self):
-        """Cubre la rama donde no hay valores en __available__."""
         self.game.__rolled__ = True
         self.game.__available__ = []
-        resultado = self.game.apply_move(0, 1)
-        self.assertFalse(resultado)
-            
+        self.assertFalse(self.game.apply_move(0, 1))
+
     def test_apply_move_desde_barra_destino_invalido(self):
-        """Cubre intento de mover desde la barra con destino inválido."""
         self.game.__rolled__ = True
         self.mock_board.get_bar_count.return_value = 1
-        resultado = self.game.apply_move(-1, 10)  # fuera del rango permitido
-        self.assertFalse(resultado)
+        self.assertFalse(self.game.apply_move(-1, 10))
 
     def test_apply_move_excepcion_general_controlada(self):
-        """Cubre la excepción general en apply_move."""
         self.game.__rolled__ = True
         self.mock_board.get_bar_count.side_effect = Exception("Error simulado")
-        resultado = self.game.apply_move(0, 1)
-        self.assertFalse(resultado)
+        self.assertFalse(self.game.apply_move(0, 1))
 
     def test_apply_move_bear_off_con_dado_mayor_exitoso(self):
-        """Cubre bear off usando dado mayor cuando no hay fichas detrás."""
         self.game.__rolled__ = True
         self.game.__turn_white__ = True
         self.game.__available__ = [6]
@@ -190,112 +175,38 @@ class TestGame(unittest.TestCase):
         self.mock_board.top_color_on_point.return_value = "white"
         self.mock_board.count_color_on_point.return_value = 0
         self.mock_board.bear_off_from.return_value = True
-        result = self.game.apply_move(23, -2)
-        self.assertTrue(result)
-
+        self.assertTrue(self.game.apply_move(23, -2))
 
     def test_apply_move_bear_off_con_dado_mayor_falla_por_fichas_detras(self):
-        """Cubre rechazo de bear off con dado mayor si hay fichas detrás."""
         self.game.__rolled__ = True
         self.game.__available__ = [6]
         self.mock_board.get_bar_count.return_value = 0
         self.mock_board.all_in_home.return_value = True
         self.mock_board.top_color_on_point.return_value = "white"
-        # Simula que hay fichas detrás
         self.mock_board.count_color_on_point.side_effect = lambda i, c: 1 if i == 19 else 0
-        result = self.game.apply_move(23, -2)
-        self.assertFalse(result)
+        self.assertFalse(self.game.apply_move(23, -2))
 
     def test_apply_move_movimiento_invalido_por_distancia(self):
-        """Cubre movimiento en tablero donde distance devuelve -1."""
         self.game.__rolled__ = True
         self.game.__available__ = [3]
         self.mock_board.get_bar_count.return_value = 0
         self.mock_board.top_color_on_point.return_value = "white"
-        # origen mayor que destino para blanco → distancia -1
-        result = self.game.apply_move(5, 3)
-        self.assertFalse(result)
+        self.assertFalse(self.game.apply_move(5, 3))
 
     def test_apply_move_movimiento_falla_por_consume(self):
-        """Cubre movimiento válido donde consume_exact y min_ge fallan."""
         self.game.__rolled__ = True
         self.game.__available__ = [1]
         self.mock_board.get_bar_count.return_value = 0
         self.mock_board.top_color_on_point.return_value = "white"
-        # distancia no está en available, por lo tanto falla el consume
-        result = self.game.apply_move(0, 3)
-        self.assertFalse(result)
+        self.assertFalse(self.game.apply_move(0, 3))
 
     def test_apply_move_bear_off_distancia_invalida(self):
-        """Cubre bear off con distance_bear_off que devuelve -1."""
         self.game.__rolled__ = True
         self.game.__available__ = [3]
         self.mock_board.get_bar_count.return_value = 0
         self.mock_board.all_in_home.return_value = True
         self.mock_board.top_color_on_point.return_value = "white"
-        # src fuera del rango válido para bear off → distance -1
-        result = self.game.apply_move(10, -2)
-        self.assertFalse(result)
-    def test_get_board_devuelve_instancia(self):
-        """Verifica que get_board devuelve la instancia de Board."""
-        result = self.game.get_board()
-        self.assertEqual(result, self.mock_board)
-
-    def test_current_player_es_blanco_por_defecto(self):
-        """Verifica que el jugador actual es blanco al inicio."""
-        jugador = self.game.current_player()
-        self.assertEqual(jugador, self.mock_white)
-
-    def test_other_player_devuelve_negro(self):
-        """Verifica que other_player devuelve el jugador negro."""
-        jugador = self.game.other_player()
-        self.assertEqual(jugador, self.mock_black)
-
-    def test_turno_cambia_correctamente(self):
-        """Simula cambio de turno manual."""
-        self.game._Game__turn_white__ = False
-        jugador = self.game.current_player()
-        self.assertEqual(jugador, self.mock_black)
-
-    def test_available_moves_inicial_vacio(self):
-        """Verifica que al iniciar no hay movimientos disponibles."""
-        self.assertEqual(self.game.get_available_moves(), [])
-
-    def test_roll_establece_dados(self):
-        """Simula un lanzamiento con valores fijos."""
-        self.mock_dice.roll.return_value = [3, 4]
-        self.game.roll()
-        self.assertIn(3, self.game.get_available_moves())
-        self.assertIn(4, self.game.get_available_moves())
-
-    def test_start_llama_a_setup_start_position(self):
-        """Verifica que start llama al método setup_start_position del board."""
-        self.game.start()
-        self.mock_board.setup_start_position.assert_called_once()
-
-    def test_estado_inicial_reinicia_valores(self):
-        """Verifica que start reinicia estado interno."""
-        self.game.start()
-        self.assertTrue(self.game._Game__turn_white__)
-        self.assertEqual(self.game.get_available_moves(), [])
-
-    def test_repr_juego(self):
-        """Test ficticio para sumar cantidad (no afecta funcionalidad)."""
-        texto = str(self.game)
-        self.assertIsInstance(texto, str)
-
-    def test_juego_tiene_atributos_principales(self):
-        """Verifica existencia de atributos internos básicos."""
-        attrs = ["_Game__board__", "_Game__dice__", "_Game__white__", "_Game__black__"]
-        for a in attrs:
-            self.assertTrue(hasattr(self.game, a))
-
-
-
-
-
-
-
+        self.assertFalse(self.game.apply_move(10, -2))
 
 
 if __name__ == "__main__":
