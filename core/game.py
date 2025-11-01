@@ -37,6 +37,42 @@ class Game:
             copia.append(v)
         return copia
 
+    def has_any_valid_move(self):
+        if not self.__rolled__ or not self.__available__:
+            return False
+        color = "white" if self.__turn_white__ else "black"
+
+        if self.__board__.get_bar_count(color) > 0:
+            for dest in range(24):
+                if self.__board__.can_land(dest, color):
+                    dist = self.__distance_bar_enter__(color, dest)
+                    if dist != -1 and (dist in self.__available__ or any(v >= dist for v in self.__available__)):
+                        return True
+            return False
+
+        for src in range(24):
+            if self.__board__.top_color_on_point(src) != color:
+                continue
+            for move in self.__available__:
+                if color == "white":
+                    dest = src + move
+                else:
+                    dest = src - move
+                if 0 <= dest <= 23 and self.__board__.can_land(dest, color):
+                    return True
+                if dest < 0 or dest > 23:
+                    if not self.__board__.all_in_home(color):
+                        continue
+                    dist = self.__distance_bear_off__(color, src)
+                    if dist == -1:
+                        continue
+                    if dist in self.__available__:
+                        return True
+                    if not self.__there_is_behind_in_home__(color, src):
+                        if any(v >= dist for v in self.__available__):
+                            return True
+        return False
+
     def roll(self):
         d1, d2 = self.__dice__.roll()
         if d1 == d2:
