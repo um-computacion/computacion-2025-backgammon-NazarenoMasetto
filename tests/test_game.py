@@ -1,6 +1,9 @@
 import unittest
 from unittest.mock import Mock
+from core.board import Board
+from core.dice import Dice
 from core.game import Game
+from core.player import Player
 
 
 class TestGame(unittest.TestCase):
@@ -207,6 +210,158 @@ class TestGame(unittest.TestCase):
         self.mock_board.all_in_home.return_value = True
         self.mock_board.top_color_on_point.return_value = "white"
         self.assertFalse(self.game.apply_move(10, -2))
+
+    # --- Tests con tablero real para has_any_valid_move ---
+
+    def _create_real_game(self):
+        board = Board()
+        board.clear()
+        dice = Dice()
+        white = Player("White", "white")
+        black = Player("Black", "black")
+        game = Game(board, dice, white, black)
+        return game, board
+
+    def test_has_any_valid_move_true_desde_tablero(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(0, "white")
+
+        game.__turn_white__ = True
+        game.__available__ = [2]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_desde_tablero_negro(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(23, "black")
+
+        game.__turn_white__ = False
+        game.__available__ = [3]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_desde_barra(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(2, "black")
+        board.add_to_bar("white")
+
+        game.__turn_white__ = True
+        game.__available__ = [2]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_desde_barra_negra(self):
+        game, board = self._create_real_game()
+        board.add_to_bar("black")
+        board.add_checker_to_point(20, "white")
+        board.add_checker_to_point(21, "white")
+
+        game.__turn_white__ = False
+        game.__available__ = [2]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_desde_barra_con_dado_mayor(self):
+        game, board = self._create_real_game()
+        board.add_to_bar("white")
+
+        game.__turn_white__ = True
+        game.__available__ = [4]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_false_barra_bloqueada(self):
+        game, board = self._create_real_game()
+        for point in range(6):
+            board.add_checker_to_point(point, "black")
+            board.add_checker_to_point(point, "black")
+        board.add_to_bar("white")
+
+        game.__turn_white__ = True
+        game.__available__ = [3]
+        game.__rolled__ = True
+
+        self.assertFalse(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_bear_off(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(22, "white")
+        board.add_checker_to_point(23, "white")
+
+        game.__turn_white__ = True
+        game.__available__ = [3]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_bear_off_con_dado_mayor(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(23, "white")
+
+        game.__turn_white__ = True
+        game.__available__ = [6]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_bear_off_negro(self):
+        game, board = self._create_real_game()
+        for point in range(6):
+            board.add_checker_to_point(point, "black")
+
+        game.__turn_white__ = False
+        game.__available__ = [2]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_bear_off_len_mayor(self):
+        game, board = self._create_real_game()
+        for point in range(18, 24):
+            board.add_checker_to_point(point, "white")
+        board.add_checker_to_point(22, "white")
+
+        game.__turn_white__ = True
+        game.__available__ = [3, 4]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_true_doble_bear_off(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(22, "white")
+        board.add_checker_to_point(23, "white")
+
+        game.__turn_white__ = True
+        game.__available__ = [4, 4, 1, 1]
+        game.__rolled__ = True
+
+        self.assertTrue(game.has_any_valid_move())
+
+    def test_has_any_valid_move_false_tablero_bloqueado(self):
+        game, board = self._create_real_game()
+        board.add_checker_to_point(0, "white")
+        board.add_checker_to_point(2, "black")
+        board.add_checker_to_point(2, "black")
+
+        game.__turn_white__ = True
+        game.__available__ = [2]
+        game.__rolled__ = True
+
+        self.assertFalse(game.has_any_valid_move())
+
+    def test_has_any_valid_move_false_sin_dados(self):
+        game, _ = self._create_real_game()
+        game.__turn_white__ = True
+        game.__available__ = []
+        game.__rolled__ = True
+
+        self.assertFalse(game.has_any_valid_move())
 
 
 if __name__ == "__main__":

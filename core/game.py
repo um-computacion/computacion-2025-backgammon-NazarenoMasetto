@@ -53,7 +53,8 @@ class Game:
         for src in range(24):
             if self.__board__.top_color_on_point(src) != color:
                 continue
-            for move in self.__available__:
+            distances = sorted(self.__available__)
+            for move in distances:
                 if color == "white":
                     dest = src + move
                 else:
@@ -69,7 +70,8 @@ class Game:
                     if dist in self.__available__:
                         return True
                     if not self.__there_is_behind_in_home__(color, src):
-                        if any(v >= dist for v in self.__available__):
+                        remaining = [v for v in self.__available__ if v >= dist]
+                        if len(remaining) > 1 or (remaining and remaining[0] >= dist):
                             return True
         return False
 
