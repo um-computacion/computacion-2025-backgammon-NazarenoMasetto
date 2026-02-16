@@ -1,0 +1,15 @@
+# Entorno virtual
+venv/
+
+# Cachés de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Cobertura de tests
+.coverage
+htmlcov/
+
+# Archivos temporales o del sistema
+.DS_Store
+Thumbs.db
